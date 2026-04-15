@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PulseHR Employee Portal</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="page-shell">
+    <aside class="sidebar">
+        <div class="brand">
+            <span class="brand-mark">P</span>
+            <div>
+                <strong>PulseHR</strong>
+                <p>Employee Portal</p>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a class="active" href="#">Dashboard</a>
+            <a href="#">Profile</a>
+            <a href="#">Attendance</a>
+            <a href="#">Leave Requests</a>
+            <a href="#">Documents</a>
+        </nav>
+        <div class="sidebar-card">
+            <p>Deployment-ready</p>
+            <strong>Built for CI/CD with Maven, Jenkins, Docker and Spring Boot.</strong>
+        </div>
+    </aside>
+
+    <main class="content">
+        <header class="topbar">
+            <div>
+                <p class="eyebrow">Good morning</p>
+                <h1 th:text="'Welcome back, ' + ${employeeName}">Welcome back, Aarav Sharma</h1>
+            </div>
+            <div class="top-actions">
+                <button>Request Leave</button>
+                <button class="secondary">Download Payslip</button>
+            </div>
+        </header>
+
+        <section class="hero-card">
+            <div>
+                <p class="hero-label">People operations overview</p>
+                <h2 th:text="${employeeRole}">Senior Operations Analyst</h2>
+                <p class="hero-copy">
+                    A modern employee experience portal for attendance, announcements, leave workflows, and quick internal actions.
+                </p>
+                <div class="tag-row">
+                    <span th:text="${department}">People Operations</span>
+                    <span>Hybrid Team</span>
+                    <span>Performance Cycle Active</span>
+                </div>
+            </div>
+            <div class="hero-stat-panel">
+                <div>
+                    <small>Attendance</small>
+                    <strong th:text="${attendance}">96.4%</strong>
+                </div>
+                <div>
+                    <small>Leave Balance</small>
+                    <strong th:text="${leaveBalance}">08 Days</strong>
+                </div>
+                <div>
+                    <small>Open Requests</small>
+                    <strong th:text="${openRequests}">03</strong>
+                </div>
+            </div>
+        </section>
+
+        <section class="stats-grid">
+            <article class="stat-card accent-blue">
+                <p>Check-in Time</p>
+                <strong>09:07 AM</strong>
+                <span>On time for 18 consecutive days</span>
+            </article>
+            <article class="stat-card accent-green">
+                <p>Upcoming Holiday</p>
+                <strong>22 April</strong>
+                <span>Regional holiday added to leave calendar</span>
+            </article>
+            <article class="stat-card accent-pink">
+                <p>Manager Feedback</p>
+                <strong>Positive</strong>
+                <span>Quarterly feedback summary is available</span>
+            </article>
+        </section>
+
+        <section class="panel-grid">
+            <article class="panel">
+                <div class="panel-head">
+                    <h3>Company Announcements</h3>
+                    <a href="#">View all</a>
+                </div>
+                <ul class="list-stack">
+                    <li th:each="announcement : ${announcements}" th:text="${announcement}">Announcement item</li>
+                </ul>
+            </article>
+
+            <article class="panel">
+                <div class="panel-head">
+                    <h3>Today’s Tasks</h3>
+                    <a href="#">Open board</a>
+                </div>
+                <ul class="task-list">
+                    <li th:each="task : ${tasks}">
+                        <span class="task-bullet"></span>
+                        <p th:text="${task}">Task item</p>
+                    </li>
+                </ul>
+            </article>
+        </section>
+
+        <section class="panel-grid lower">
+            <article class="panel">
+                <div class="panel-head">
+                    <h3>Quick Access</h3>
+                </div>
+                <div class="quick-grid">
+                    <a href="#">Attendance Log</a>
+                    <a href="#">Leave Policy</a>
+                    <a href="#">Benefits</a>
+                    <a href="#">Support Desk</a>
+                </div>
+            </article>
+
+            <article class="panel portal-health">
+                <div class="panel-head">
+                    <h3>Portal Health</h3>
+                    <a href="/actuator/health">API</a>
+                </div>
+                <div class="health-stack">
+                    <div><span>Build Tool</span><strong>Maven</strong></div>
+                    <div><span>CI Server</span><strong>Jenkins</strong></div>
+                    <div><span>Container</span><strong>Docker</strong></div>
+                    <div><span>Runtime</span><strong>Java 17</strong></div>
+                </div>
+            </article>
+        </section>
+    </main>
+</div>
+</body>
+</html>

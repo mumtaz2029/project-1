@@ -1,17 +1,40 @@
 package com.mumtaz.devops.controller;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-@RestController
-@RequestMapping("/api")
+@Controller
 public class AppController {
 
-    @GetMapping("/message")
+    @GetMapping("/")
+    public String home(Model model) {
+        model.addAttribute("employeeName", "Aarav Sharma");
+        model.addAttribute("employeeRole", "Senior Operations Analyst");
+        model.addAttribute("department", "People Operations");
+        model.addAttribute("attendance", "96.4%");
+        model.addAttribute("leaveBalance", "08 Days");
+        model.addAttribute("openRequests", "03");
+        model.addAttribute("announcements", List.of(
+                "Quarterly review meetings are scheduled for Friday at 3:00 PM.",
+                "New cybersecurity awareness module is now live in the learning portal.",
+                "Team lunch and recognition circle is planned for the last working day of the month."
+        ));
+        model.addAttribute("tasks", List.of(
+                "Approve onboarding checklist for two new hires.",
+                "Submit travel reimbursement documents before 5 PM.",
+                "Review pending leave requests from the support team."
+        ));
+        return "index";
+    }
+
+    @GetMapping("/api/message")
+    @ResponseBody
     public Map<String, String> message() {
         Map<String, String> response = new LinkedHashMap<>();
         response.put("application", "CI/CD Pipeline for Java Application");
@@ -20,7 +43,8 @@ public class AppController {
         return response;
     }
 
-    @GetMapping("/pipeline")
+    @GetMapping("/api/pipeline")
+    @ResponseBody
     public Map<String, Object> pipelineDetails() {
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("project", "CI/CD Pipeline for Java Application");
@@ -29,6 +53,7 @@ public class AppController {
         response.put("containerization", "Docker");
         response.put("runtime", "Java 17");
         response.put("status", "Ready for CI/CD workflow");
+        response.put("ui", "Modern employee portal dashboard");
         return response;
     }
 }

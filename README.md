@@ -1,6 +1,6 @@
 # CI/CD Pipeline for Java Application
 
-This project is a Maven-based Spring Boot web application prepared for a CI/CD workflow using GitHub, Jenkins, Docker, Java, and Linux-oriented deployment steps.
+This project is a Maven-based Spring Boot web application prepared for a CI/CD workflow using GitHub, Jenkins, Docker, Java, and Linux-oriented deployment steps. It now presents a modern mini employee portal UI so the application feels like a real internal business product instead of a plain demo service.
 
 ## Project Overview
 
@@ -24,6 +24,7 @@ The application demonstrates a simple Java web service that can be:
 
 ## Features
 
+- Modern employee portal dashboard UI
 - REST API endpoints for application status and project information
 - Health endpoint through Spring Boot Actuator
 - Maven build and test configuration
@@ -32,6 +33,7 @@ The application demonstrates a simple Java web service that can be:
 
 ## API Endpoints
 
+- `GET /` - employee portal dashboard
 - `GET /api/message` - returns a welcome message
 - `GET /api/pipeline` - returns pipeline/project details
 - `GET /actuator/health` - returns health status
@@ -53,7 +55,7 @@ java -jar target/java-cicd-pipeline-app-0.0.1-SNAPSHOT.jar
 ### 3. Access the app
 
 ```text
-http://localhost:8080/api/message
+http://localhost:8080/
 ```
 
 ## Docker Commands
