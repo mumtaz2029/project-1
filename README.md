@@ -1,6 +1,6 @@
 # CI/CD Pipeline for Java Application
 
-This project is a Maven-based Spring Boot web application prepared for a CI/CD workflow using GitHub, Jenkins, Docker, Java, and Linux-oriented deployment steps. It now presents a modern mini employee portal UI so the application feels like a real internal business product instead of a plain demo service.
+This project is a Maven-based Spring Boot web application prepared for a CI/CD workflow using GitHub, Jenkins, Docker, Java, and Linux-oriented deployment steps. It now presents a modern mini employee portal UI so the application feels like a real internal business product.
 
 ## Project Overview
 
