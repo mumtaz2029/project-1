@@ -18,7 +18,7 @@ The application demonstrates a simple Java web service that can be:
 - Jenkins
 - Docker
 - Maven
-- Java 17
+- Java 21
 - Spring Boot
 - Linux-friendly container deployment
 
@@ -84,7 +84,7 @@ The `Jenkinsfile` performs:
 
 ## Suggested Jenkins Requirements
 
-- JDK 17 configured as `jdk17`
+- JDK 21 configured as `jdk21`
 - Maven configured as `maven3`
 - Docker available on the Jenkins agent
 
