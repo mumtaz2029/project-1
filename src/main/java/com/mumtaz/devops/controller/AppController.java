@@ -51,7 +51,7 @@ public class AppController {
         response.put("buildTool", "Maven");
         response.put("ciServer", "Jenkins");
         response.put("containerization", "Docker");
-        response.put("runtime", "Java 17");
+        response.put("runtime", "Java 21");
         response.put("status", "Ready for CI/CD workflow");
         response.put("ui", "Modern employee portal dashboard");
         return response;

@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        APP_NAME = 'java-cicd-pipeline-app'
-        DOCKER_IMAGE = "mumtaz2029/${APP_NAME}:${BUILD_NUMBER}"
-    }
-
     tools {
         jdk 'jdk21'
         maven 'maven3'
@@ -20,36 +15,37 @@ pipeline {
 
         stage('Build') {
             steps {
-                bat 'mvn -B clean package'
+                sh 'mvn -B clean compile'
             }
         }
 
         stage('Test') {
             steps {
-                bat 'mvn test'
+                sh 'mvn -B test'
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Verify and Package') {
             steps {
-                bat "docker build -t %DOCKER_IMAGE% ."
+                sh 'mvn -B verify'
             }
         }
 
-        stage('Deploy Container') {
+        stage('SonarQube Analysis') {
             steps {
-                bat 'docker rm -f java-cicd-pipeline-app || exit 0'
-                bat "docker run -d -p 8080:8080 --name java-cicd-pipeline-app %DOCKER_IMAGE%"
+                withSonarQubeEnv('sonar-server') {
+                    sh 'mvn -B sonar:sonar'
+                }
             }
         }
     }
 
     post {
         success {
-            echo 'Pipeline completed successfully.'
+            echo 'Build, packaging, and SonarQube analysis completed successfully.'
         }
         failure {
-            echo 'Pipeline failed. Check the stage logs for details.'
+            echo 'Pipeline failed. Check Jenkins console output and SonarQube logs.'
         }
     }
 }
