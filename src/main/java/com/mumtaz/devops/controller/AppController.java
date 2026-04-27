@@ -14,20 +14,20 @@ public class AppController {
 
     @GetMapping("/")
     public String home(Model model) {
-        model.addAttribute("employeeName", "Aarav Sharma");
+        model.addAttribute("employeeName", "Mumtaz Jahan");
         model.addAttribute("employeeRole", "Senior Operations Analyst");
         model.addAttribute("department", "People Operations");
         model.addAttribute("attendance", "96.4%");
         model.addAttribute("leaveBalance", "08 Days");
         model.addAttribute("openRequests", "03");
         model.addAttribute("announcements", List.of(
-                "Quarterly review meetings are scheduled for Friday at 3:00 PM.",
+                "Quarterly review meetings are scheduled on chabutra for Friday at 3:00 PM.",
                 "New cybersecurity awareness module is now live in the learning portal.",
-                "Team lunch and recognition circle is planned for the last working day of the month."
+                "Team lunch and recognition dancing(dinchak-dinchak) circle is planned for the last working day of the month."
         ));
         model.addAttribute("tasks", List.of(
                 "Approve onboarding checklist for two new hires.",
-                "Submit travel reimbursement documents before 5 PM.",
+                "have your lunch on time, take a nap and go home on time.",
                 "Review pending leave requests from the support team."
         ));
         return "index";
