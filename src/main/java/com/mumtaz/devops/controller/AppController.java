@@ -1,5 +1,4 @@
 package com.mumtaz.devops.controller;
-
 import java.time.Instant;
 import java.util.List;
 import java.util.LinkedHashMap;
@@ -8,10 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 @Controller
 public class AppController {
-
     @GetMapping("/")
     public String home(Model model) {
         model.addAttribute("employeeName", "Mumtaz Jahan");
@@ -32,7 +29,6 @@ public class AppController {
         ));
         return "index";
     }
-
     @GetMapping("/api/message")
     @ResponseBody
     public Map<String, String> message() {
@@ -42,7 +38,6 @@ public class AppController {
         response.put("timestamp", Instant.now().toString());
         return response;
     }
-
     @GetMapping("/api/pipeline")
     @ResponseBody
     public Map<String, Object> pipelineDetails() {
