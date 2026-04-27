@@ -89,7 +89,7 @@ a {
 .sidebar-nav a.active,
 .sidebar-nav a:hover {
   background: rgba(255, 255, 255, 0.12);
-  color: #fff;
+  color: #000;
 }
 
 .sidebar-card {
