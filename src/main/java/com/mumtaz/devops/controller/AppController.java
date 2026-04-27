@@ -23,7 +23,7 @@ public class AppController {
         model.addAttribute("announcements", List.of(
                 "Quarterly review meetings are scheduled on chabutra for Friday at 3:00 PM.",
                 "New cybersecurity awareness module is now live in the learning portal.",
-                "Team lunch and recognition dancing(dinchak-dinchak) circle is planned for the last working day of the month."
+                "Team fun and recognition circle is planned for the last working day of the month."
         ));
         model.addAttribute("tasks", List.of(
                 "Approve onboarding checklist for two new hires.",
