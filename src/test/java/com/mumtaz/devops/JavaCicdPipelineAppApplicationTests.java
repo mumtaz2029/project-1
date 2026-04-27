@@ -6,10 +6,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class JavaCicdPipelineAppApplicationTests {
 
-
-    @Test
-    void contextLoads() {
-        assert true;
+@Test
+void contextLoads() {
+assert true;
     }
 
 }
