@@ -24,6 +24,7 @@
         <sonar.host.url>http://localhost:9000</sonar.host.url>
         <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
         <sonar.java.source>21</sonar.java.source>
+        <sonar.exclusions>target/**</sonar.exclusions>
     </properties>
 
     <dependencies>
