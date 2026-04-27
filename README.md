@@ -243,24 +243,34 @@ This repository was updated to match your Ubuntu + Jenkins + SonarQube setup:
 
 ## Run the Application Locally
 
-Build the project:
+## SonarQube Code Analysis and Issue Resolution
 
-```bash
-mvn clean package
-```
+After integrating SonarQube with Jenkins, automated code quality analysis was executed as part of the CI pipeline.
 
-Run the application:
+During the first scan, SonarQube reported a maintainability issue related to an empty test method (`contextLoads`) in the Spring Boot test class.
 
-```bash
-java -jar target/java-cicd-pipeline-app-0.0.1-SNAPSHOT.jar
-```
+The issue appeared under rule:
 
-Access it at:
+`java:S1186 – Methods should not be empty`
 
-```text
-http://localhost:8080/
-```
+### Issue Detected
 
+SonarQube flagged the test method because it had an empty body.
+
+![SonarQube Issue](images/sonarqube-issue.png)
+
+### Resolution
+
+The issue was resolved by documenting the purpose of the test method.  
+The method verifies that the Spring Boot application context loads successfully.
+
+Updated test method:
+
+```java
+@Test
+void contextLoads() {
+    // Verify that the Spring Boot application context loads successfully
+}
 ## API Endpoints
 
 - `GET /` - employee portal dashboard
