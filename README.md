@@ -266,11 +266,12 @@ The method verifies that the Spring Boot application context loads successfully.
 
 Updated test method:
 
-```java
+``
 @Test
 void contextLoads() {
     // Verify that the Spring Boot application context loads successfully
-}
+} ``
+
 ## API Endpoints
 
 - `GET /` - employee portal dashboard
