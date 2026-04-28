@@ -8,7 +8,8 @@ The pipeline automatically builds, tests, analyzes code quality, creates Docker 
 
 ## 🏗️ CI/CD Pipeline Architecture
 
-![CI/CD Pipeline Architecture](docs/screenshots/cicd-architecture.png)
+<img width="1344" height="896" alt="image" src="https://github.com/user-attachments/assets/bbd0a3b7-6be3-4e0f-9bfe-f5264a622c0d" />
+
 
 > **Single Instance Deployment on AWS EC2 (No Kubernetes)**
 >
@@ -52,7 +53,8 @@ The pipeline is implemented using **Jenkins Declarative Pipeline** and includes 
 
 Before creating the pipeline, the required plugins are installed in Jenkins.
 
-![Jenkins Plugin Installation](docs/screenshots/jenkins-plugins.png)
+<img width="1914" height="1031" alt="Screenshot 2026-04-27 052024" src="https://github.com/user-attachments/assets/33a1ac3b-a946-4ec7-94ae-a9123aec559d" />
+
 
 **Plugins installed:**
 - SonarQube Scanner 2.18.2 — integrates SonarQube for code quality inspection
@@ -65,7 +67,8 @@ Before creating the pipeline, the required plugins are installed in Jenkins.
 
 The SonarQube Scanner version is configured under **Manage Jenkins → Tools**.
 
-![SonarQube Scanner Version Selection](docs/screenshots/sonarqube-scanner-config.png)
+<img width="1488" height="977" alt="Screenshot 2026-04-27 053113" src="https://github.com/user-attachments/assets/bb428e85-4494-4904-9d3c-7f159caac7df" />
+
 
 **SonarQube Scanner 8.1.0.6389** is selected as the scanner version for this pipeline.
 
@@ -75,7 +78,7 @@ The SonarQube Scanner version is configured under **Manage Jenkins → Tools**.
 
 The CI/CD pipeline is executed automatically through Jenkins.
 
-![Jenkins Pipeline Stage View](docs/screenshots/jenkins-pipeline-stages.png)
+<img width="1914" height="1025" alt="Screenshot 2026-04-27 094841" src="https://github.com/user-attachments/assets/c4e5b5db-ff87-4e73-8026-f40efcf6bd04" />
 
 The **Stage View** shows each pipeline stage with average run times:
 
@@ -106,7 +109,8 @@ The pipeline pulls the latest source code from GitHub.
 git branch: 'main', url: 'https://github.com/mumtaz2029/project-1.git'
 ```
 
-![Jenkins Pipeline Syntax - Git Checkout](docs/screenshots/jenkins-git-checkout.png)
+<img width="1919" height="1028" alt="Screenshot 2026-04-27 062236" src="https://github.com/user-attachments/assets/c4100329-b9e6-4fe6-8239-cd17762af581" />
+
 
 The Jenkins **Pipeline Syntax** generator is used to produce the correct Groovy `git` step, targeting the `main` branch of the repository.
 
@@ -157,11 +161,12 @@ SonarQube scans the codebase for code smells, bugs, security vulnerabilities, an
 
 ### Quality Gate — Initial Scan (Failed)
 
-![SonarQube Quality Gate Failed](docs/screenshots/sonarqube-quality-gate-failed.png)
+<img width="1306" height="628" alt="Screenshot 2026-04-27 084940" src="https://github.com/user-attachments/assets/53fb5864-3f59-4d6b-bb85-5d0d1902e021" />
+
 
 The initial scan showed **1 condition failed**: 26.7% duplicated lines (threshold ≤ 3.0%). Coverage also showed 0.0% (required ≥ 80.0%).
 
-![SonarQube Project Overview — Failed](docs/screenshots/sonarqube-project-overview-failed.png)
+<img width="1284" height="275" alt="Screenshot 2026-04-27 085914" src="https://github.com/user-attachments/assets/eb5f20d7-299c-4123-992f-ba7919cf437b" />
 
 The **employeeapp** project overview showed `Failed` status with 20.1% duplications.
 
@@ -169,25 +174,28 @@ The **employeeapp** project overview showed `Failed` status with 20.1% duplicati
 
 **Issue 1 — CSS Contrast (Maintainability / Medium)**
 
-![SonarQube CSS Contrast Issue](docs/screenshots/sonarqube-issue-css-contrast.png)
+<img width="1906" height="1025" alt="Screenshot 2026-04-27 074729" src="https://github.com/user-attachments/assets/9ce49a5b-5099-4c8b-b77e-96864ee26c83" />
+
 
 SonarQube flagged a CSS accessibility issue: `Text does not meet the minimal contrast requirement with its background` in `src/main/resources/static/css/style.css` at Line 92 (`color: #fff`).
 
 **Issue 2 — Empty Test Method (Maintainability / High)**
 
-![SonarQube Empty Method Issue](docs/screenshots/sonarqube-issue-empty-method.png)
+<img width="1908" height="1026" alt="Screenshot 2026-04-27 080615" src="https://github.com/user-attachments/assets/7cdcf9ae-7282-4887-91bc-d648419f1536" />
+
 
 SonarQube flagged an empty `contextLoads()` method in `JavaCicdPipelineAppApplicationTests.java`: *"Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."*
 
 ### Fixed Issues
 
-![SonarQube Fixed Issues](docs/screenshots/sonarqube-fixed-issues.png)
+<img width="1909" height="1012" alt="Screenshot 2026-04-27 090015" src="https://github.com/user-attachments/assets/ea02abba-ec1b-4798-8923-086f128a19ec" />
 
 After resolving the flagged issues, all **3 issues** were marked as `Fixed` in SonarQube.
 
 ### Quality Gate — Passed ✅
 
-![SonarQube Quality Gate Passed](docs/screenshots/sonarqube-quality-gate-passed.png)
+<img width="1919" height="1035" alt="Screenshot 2026-04-27 094855" src="https://github.com/user-attachments/assets/0f952d8e-0241-43dd-a29c-ddecc097aefd" />
+
 
 After fixes, the SonarQube Quality Gate shows **Passed** with:
 - New issues: **0**
@@ -236,7 +244,7 @@ stage('Build') {
 
 The application is containerized and pushed to DockerHub.
 
-![DockerHub Repository — Pushed Images](docs/screenshots/dockerhub-repository.png)
+<img width="1916" height="1025" alt="Screenshot 2026-04-27 095344" src="https://github.com/user-attachments/assets/4cc35d61-479f-47a4-a6a8-1979cde8c826" />
 
 The **mumtaz2029/employee-portal** DockerHub repository shows **4 active image tags** successfully pushed (latest push: 2 minutes ago, repository size: 177.8 MB).
 
@@ -269,7 +277,8 @@ stage('Docker Push to DockerHub') {
 
 ### EC2 Instance
 
-![AWS EC2 Instance Running](docs/screenshots/aws-ec2-instance.png)
+<img width="1919" height="987" alt="Screenshot 2026-04-27 100103" src="https://github.com/user-attachments/assets/586f7234-1f95-498b-9544-e7d44766f7d2" />
+
 
 The **Employee Portal** EC2 instance is deployed and running in **ap-southeast-1b (Singapore)**:
 
@@ -283,7 +292,7 @@ The **Employee Portal** EC2 instance is deployed and running in **ap-southeast-1
 
 ### Security Group — Inbound Rules
 
-![AWS EC2 Security Group Rules](docs/screenshots/aws-ec2-security-group.png)
+<img width="1913" height="990" alt="Screenshot 2026-04-27 100122" src="https://github.com/user-attachments/assets/1b8858be-c4cd-4c24-a779-dd5def42c594" />
 
 The inbound security group rules expose the following ports:
 
@@ -317,7 +326,8 @@ stage('Run Docker Container') {
 
 The Employee Portal is live and accessible via the EC2 Public IP.
 
-![Employee Portal — Application Live](docs/screenshots/employee-portal-live.png)
+<img width="1918" height="1024" alt="Screenshot 2026-04-27 095019" src="https://github.com/user-attachments/assets/5a054afe-e506-48c8-b822-cc048dc081ce" />
+
 
 > **URL:** `http://18.143.76.138:5555`
 
