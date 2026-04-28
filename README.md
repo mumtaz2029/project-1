@@ -1,294 +1,491 @@
-# CI/CD Pipeline for Java Application
+# 🚀 Employee Portal CI/CD Pipeline (Java + Jenkins + SonarQube + Docker + AWS)
 
-This project is a Jenkins-driven Java application built for an Ubuntu 24.04 VM setup. The core workflow is: launch the VM, install Jenkins with Java 21, run SonarQube in Docker, build the Spring Boot application with Maven, and execute automated code quality analysis from Jenkins. The application itself is a mini employee portal, while the DevOps story focuses on Jenkins automation, Maven builds, and SonarQube validation.
+This project demonstrates a **complete end-to-end CI/CD pipeline** for a **Spring Boot Java application** using Jenkins, SonarQube, Docker, and AWS EC2.
 
-## Project Overview
+The pipeline automatically builds, tests, analyzes code quality, creates Docker images, pushes them to DockerHub, and deploys the application on AWS EC2.
 
-This repository demonstrates how to:
+---
 
-- host Jenkins on an Ubuntu EC2 VM
-- run SonarQube in Docker on the same VM
-- build a Java Spring Boot project with Maven
-- perform automated SonarQube analysis from Jenkins
-- prepare a clean CI flow for interview and portfolio use
+## 🏗️ CI/CD Pipeline Architecture
 
-## Tech Stack
+![CI/CD Pipeline Architecture](docs/screenshots/cicd-architecture.png)
 
-- Ubuntu 24.04 VM
-- Jenkins
-- SonarQube Community LTS
-- Docker
-- Java 21
-- Maven 3
-- Spring Boot
-- Thymeleaf
+> **Single Instance Deployment on AWS EC2 (No Kubernetes)**
+>
+> The diagram above illustrates the full pipeline flow:
+> **Code Push → Jenkins Build & Test → SonarQube Analysis → Docker Build & Push → Deploy to EC2 → Application Live**
 
-## Application Features
+---
 
-- employee portal dashboard UI at `/`
-- project and pipeline details API at `/api/pipeline`
-- welcome API at `/api/message`
-- application health endpoint at `/actuator/health`
-- Maven and JaCoCo-enabled build configuration
-- Jenkinsfile aligned to Linux shell execution
+## 🔄 Pipeline Overview
 
-## Infrastructure Used
+The pipeline is implemented using **Jenkins Declarative Pipeline** and includes the following stages:
 
-- Instance type: `t2.large`
-- AMI: `Ubuntu 24.04`
-- Storage: `25 GB`
-- Number of instances: `1`
+1. Git Checkout
+2. Compile
+3. Test
+4. SonarQube Analysis
+5. Build
+6. Docker Build
+7. Docker Push to DockerHub
+8. Run Docker Container
 
-## Ubuntu VM Setup
+---
 
-### 1. Launch the VM
+## ⚙️ Technologies Used
 
-Provision an Ubuntu VM with:
+| Tool | Purpose |
+|------|---------|
+| Java | Backend Development |
+| Spring Boot | Web Framework |
+| Maven | Build Tool |
+| Jenkins | CI/CD Automation |
+| SonarQube | Code Quality Analysis |
+| Docker | Containerization |
+| DockerHub | Image Repository |
+| AWS EC2 | Cloud Deployment |
+| GitHub | Source Code Repository |
 
-- instance type `t2.large`
-- Ubuntu `24.04`
-- `25 GB` storage
-- one instance
+---
 
-### 2. Connect to the VM
+## 🔧 Stage 0: Jenkins Plugin Installation
 
-Connect using SSH or MobaXterm.
+Before creating the pipeline, the required plugins are installed in Jenkins.
 
-### 3. Update packages
+![Jenkins Plugin Installation](docs/screenshots/jenkins-plugins.png)
+
+**Plugins installed:**
+- SonarQube Scanner 2.18.2 — integrates SonarQube for code quality inspection
+- Pipeline Stage View 2.41 — provides a visual pipeline stage dashboard
+- Eclipse Temurin Installer — installs the JDK build based on OpenJDK
+
+---
+
+## 🛠️ Stage 0b: SonarQube Scanner Tool Configuration
+
+The SonarQube Scanner version is configured under **Manage Jenkins → Tools**.
+
+![SonarQube Scanner Version Selection](docs/screenshots/sonarqube-scanner-config.png)
+
+**SonarQube Scanner 8.1.0.6389** is selected as the scanner version for this pipeline.
+
+---
+
+## 🔄 Jenkins Pipeline Execution
+
+The CI/CD pipeline is executed automatically through Jenkins.
+
+![Jenkins Pipeline Stage View](docs/screenshots/jenkins-pipeline-stages.png)
+
+The **Stage View** shows each pipeline stage with average run times:
+
+| Stage | Avg. Time |
+|-------|-----------|
+| Declarative: Tool Install | 163ms |
+| Git Checkout | 1s |
+| Compile | 3s |
+| Test | 11s |
+| SonarQube Analysis | 20s |
+| Build Package | 11s |
+| Docker Build | 2s |
+| Docker Push | 10s |
+| Run Docker Container | 773ms |
+
+> ✅ **Build #17** — Passed with all green stages  
+> ❌ **Build #16** — Failed at the "Run Docker Container" stage (774ms timeout)
+
+The **SonarQube Quality Gate** result is shown inline as `Passed` with server-side processing `Success`.
+
+---
+
+## 📥 Stage 1: Git Checkout
+
+The pipeline pulls the latest source code from GitHub.
+
+```groovy
+git branch: 'main', url: 'https://github.com/mumtaz2029/project-1.git'
+```
+
+![Jenkins Pipeline Syntax - Git Checkout](docs/screenshots/jenkins-git-checkout.png)
+
+The Jenkins **Pipeline Syntax** generator is used to produce the correct Groovy `git` step, targeting the `main` branch of the repository.
+
+**Source Code Structure:**
+```
+app/
+Dockerfile
+Jenkinsfile
+pom.xml
+requirements.txt
+README.md
+etc.
+```
+
+---
+
+## 🔨 Stage 2: Compile
+
+Maven compiles the Spring Boot application source code:
+
+```groovy
+stage('Compile') {
+    steps {
+        sh 'mvn compile'
+    }
+}
+```
+
+---
+
+## 🧪 Stage 3: Test
+
+Unit tests are executed (if any) using Maven:
+
+```groovy
+stage('Test') {
+    steps {
+        sh 'mvn test'
+    }
+}
+```
+
+---
+
+## 🔍 Stage 4: SonarQube Analysis
+
+SonarQube scans the codebase for code smells, bugs, security vulnerabilities, and duplications.
+
+### Quality Gate — Initial Scan (Failed)
+
+![SonarQube Quality Gate Failed](docs/screenshots/sonarqube-quality-gate-failed.png)
+
+The initial scan showed **1 condition failed**: 26.7% duplicated lines (threshold ≤ 3.0%). Coverage also showed 0.0% (required ≥ 80.0%).
+
+![SonarQube Project Overview — Failed](docs/screenshots/sonarqube-project-overview-failed.png)
+
+The **employeeapp** project overview showed `Failed` status with 20.1% duplications.
+
+### SonarQube Issues Identified
+
+**Issue 1 — CSS Contrast (Maintainability / Medium)**
+
+![SonarQube CSS Contrast Issue](docs/screenshots/sonarqube-issue-css-contrast.png)
+
+SonarQube flagged a CSS accessibility issue: `Text does not meet the minimal contrast requirement with its background` in `src/main/resources/static/css/style.css` at Line 92 (`color: #fff`).
+
+**Issue 2 — Empty Test Method (Maintainability / High)**
+
+![SonarQube Empty Method Issue](docs/screenshots/sonarqube-issue-empty-method.png)
+
+SonarQube flagged an empty `contextLoads()` method in `JavaCicdPipelineAppApplicationTests.java`: *"Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation."*
+
+### Fixed Issues
+
+![SonarQube Fixed Issues](docs/screenshots/sonarqube-fixed-issues.png)
+
+After resolving the flagged issues, all **3 issues** were marked as `Fixed` in SonarQube.
+
+### Quality Gate — Passed ✅
+
+![SonarQube Quality Gate Passed](docs/screenshots/sonarqube-quality-gate-passed.png)
+
+After fixes, the SonarQube Quality Gate shows **Passed** with:
+- New issues: **0**
+- Accepted issues: **0**
+- Duplications: **0.0%**
+
+```groovy
+stage('SonarQube Analysis') {
+    steps {
+        withSonarQubeEnv('sonar-server') {
+            sh '''$SCANNER_HOME/bin/sonar-scanner \
+                -Dsonar.projectName=employeeapp \
+                -Dsonar.projectKey=employeeapp \
+                -Dsonar.java.binaries=. '''
+        }
+    }
+}
+
+stage('Quality Gate') {
+    steps {
+        script {
+            waitForQualityGate abortPipeline: false,
+                credentialsId: 'Sonar-token'
+        }
+    }
+}
+```
+
+---
+
+## 📦 Stage 5: Build Package
+
+Maven packages the application into a JAR:
+
+```groovy
+stage('Build') {
+    steps {
+        sh 'mvn package'
+    }
+}
+```
+
+---
+
+## 🐳 Stage 6 & 7: Docker Build & Push
+
+The application is containerized and pushed to DockerHub.
+
+![DockerHub Repository — Pushed Images](docs/screenshots/dockerhub-repository.png)
+
+The **mumtaz2029/employee-portal** DockerHub repository shows **4 active image tags** successfully pushed (latest push: 2 minutes ago, repository size: 177.8 MB).
+
+```groovy
+stage('Docker Build') {
+    steps {
+        script {
+            withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                sh 'docker build -t employee-portal .'
+                sh 'docker tag employee-portal mumtaz2029/employee-portal:latest'
+            }
+        }
+    }
+}
+
+stage('Docker Push to DockerHub') {
+    steps {
+        script {
+            withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                sh 'docker push mumtaz2029/employee-portal:latest'
+            }
+        }
+    }
+}
+```
+
+---
+
+## ☁️ Stage 8: Deploy to AWS EC2
+
+### EC2 Instance
+
+![AWS EC2 Instance Running](docs/screenshots/aws-ec2-instance.png)
+
+The **Employee Portal** EC2 instance is deployed and running in **ap-southeast-1b (Singapore)**:
+
+| Property | Value |
+|---------|-------|
+| Instance ID | i-0b69d0b30eecdd1ee |
+| Instance Type | m7i-flex.large |
+| Instance State | ✅ Running |
+| Public IPv4 | 18.143.76.138 |
+| Status Checks | 3/3 passed |
+
+### Security Group — Inbound Rules
+
+![AWS EC2 Security Group Rules](docs/screenshots/aws-ec2-security-group.png)
+
+The inbound security group rules expose the following ports:
+
+| Port | Protocol | Purpose |
+|------|----------|---------|
+| 9000 | TCP | SonarQube |
+| 8080 | TCP | Jenkins |
+| 5555 | TCP | Application |
+| 22 | SSH | Remote Access |
+
+### Deployment Script
+
+```groovy
+stage('Run Docker Container') {
+    steps {
+        script {
+            withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                sh 'docker stop employee-portal || true'
+                sh 'docker rm employee-portal || true'
+                sh 'docker pull mumtaz2029/employee-portal:latest'
+                sh 'docker run -d --name employee-portal -p 5555:5555 mumtaz2029/employee-portal:latest'
+            }
+        }
+    }
+}
+```
+
+---
+
+## 🌐 Stage 9: Application Live
+
+The Employee Portal is live and accessible via the EC2 Public IP.
+
+![Employee Portal — Application Live](docs/screenshots/employee-portal-live.png)
+
+> **URL:** `http://18.143.76.138:5555`
+
+**Features visible in the live app:**
+- Welcome Dashboard with employee name (Mumtaz Jahan)
+- Attendance tracker — 96.4%
+- Leave Balance — 08 Days
+- Open Requests — 03
+- Check-in Time — 09:07 AM (on time for 18 consecutive days)
+- Upcoming Holiday — 22 April
+- Manager Feedback — Positive
+- Company Announcements & Today's Tasks
+
+---
+
+## 🏗️ Infrastructure & Tools Summary
+
+| Tool | Role |
+|------|------|
+| **AWS EC2** | Jenkins Server & Application Host (Single Instance) |
+| **Docker Hub** | Container Registry — `mumtaz2029/employee-portal` |
+| **SonarQube** | Code Quality Analysis — Community Build v26.4.0 |
+| **GitHub** | Source Control — `mumtaz2029/project-1` |
+
+---
+
+## 📋 Full Jenkinsfile
+
+```groovy
+pipeline {
+    agent any
+
+    tools {
+        jdk 'jdk17'
+        maven 'maven3'
+    }
+
+    environment {
+        SCANNER_HOME = tool 'sonar-scanner'
+    }
+
+    stages {
+        stage('Git Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/mumtaz2029/project-1.git'
+            }
+        }
+
+        stage('Compile') {
+            steps {
+                sh 'mvn compile'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('sonar-server') {
+                    sh '''$SCANNER_HOME/bin/sonar-scanner \
+                        -Dsonar.projectName=employeeapp \
+                        -Dsonar.projectKey=employeeapp \
+                        -Dsonar.java.binaries=. '''
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                script {
+                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-token'
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'mvn package'
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                        sh 'docker build -t employee-portal .'
+                        sh 'docker tag employee-portal mumtaz2029/employee-portal:latest'
+                    }
+                }
+            }
+        }
+
+        stage('Docker Push to DockerHub') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                        sh 'docker push mumtaz2029/employee-portal:latest'
+                    }
+                }
+            }
+        }
+
+        stage('Run Docker Container') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                        sh 'docker stop employee-portal || true'
+                        sh 'docker rm employee-portal || true'
+                        sh 'docker pull mumtaz2029/employee-portal:latest'
+                        sh 'docker run -d --name employee-portal -p 5555:5555 mumtaz2029/employee-portal:latest'
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+---
+
+## 📁 Project Structure
+
+```
+project-1/
+├── src/
+│   ├── main/
+│   │   ├── java/com/mumtaz/devops/
+│   │   └── resources/static/css/style.css
+│   └── test/java/com/mumtaz/devops/
+│       └── JavaCicdPipelineAppApplicationTests.java
+├── Dockerfile
+├── Jenkinsfile
+├── pom.xml
+└── README.md
+```
+
+---
+
+## 🚀 How to Run Locally
 
 ```bash
-sudo apt update
+# Clone the repository
+git clone https://github.com/mumtaz2029/project-1.git
+cd project-1
+
+# Build with Maven
+mvn clean package
+
+# Build Docker image
+docker build -t employee-portal .
+
+# Run Docker container
+docker run -d --name employee-portal -p 5555:5555 employee-portal
+
+# Access the app
+open http://localhost:5555
 ```
 
-## Jenkins Setup
+---
 
-Install Java 21 first:
+## 📌 Pipeline Flow Summary
 
-```bash
-sudo apt install openjdk-21-jre-headless -y
 ```
-
-Then install Jenkins using the official Debian/Ubuntu repository:
-
-```bash
-sudo wget -O /usr/share/keyrings/jenkins-keyring.asc \
-  https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
-echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc]" \
-  https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
-  /etc/apt/sources.list.d/jenkins.list > /dev/null
-sudo apt-get update
-sudo apt-get install jenkins -y
+GitHub        Jenkins          SonarQube       Docker          AWS EC2         Live
+Code Push  →  Build & Test  →  Analysis     →  Build & Push →  Deploy      →  App Live
+              (Maven)          (Quality Gate)  (DockerHub)     (EC2 + SSH)    :5555
 ```
-
-If you want to keep the installation commands in a script file:
-
-```bash
-vi j.sh
-```
-
-Paste the Jenkins commands, save the file, and then run:
-
-```bash
-sudo chmod +x j.sh
-./j.sh
-```
-
-Jenkins runs on port `8080` by default, so open port `8080` in the VM security group and complete the usual Jenkins first-time setup in the browser:
-
-```text
-http://<public-ip>:8080
-```
-
-## SonarQube Setup
-
-SonarQube is run through Docker on the same VM.
-
-Install Docker:
-
-```bash
-sudo apt install docker.io -y
-```
-
-Allow the current user to communicate with the Docker socket:
-
-```bash
-sudo chmod 666 /var/run/docker.sock
-```
-
-Run SonarQube:
-
-```bash
-docker run -d --name sonarqube -p 9000:9000 sonarqube:lts-community
-docker ps
-```
-
-Open port `9000` in the security group, then access SonarQube:
-
-```text
-http://<public-ip>:9000
-```
-
-Default login:
-
-- username: `admin`
-- password: `admin`
-
-After first login, set a new password.
-
-## Jenkins Plugin Setup
-
-From Jenkins:
-
-`Manage Jenkins` -> `Plugins` -> `Available Plugins`
-
-Install these plugins:
-
-- SonarQube Scanner
-- Eclipse Temurin installer
-- Pipeline Stage View
-
-## Jenkins Tool Configuration
-
-Go to:
-
-`Manage Jenkins` -> `Tools`
-
-Configure the following tools:
-
-### JDK
-
-- Name: `jdk21`
-- Install automatically: enabled
-- Source: `Install from adoptium.net`
-- Version: `jdk-21`
-
-### SonarQube Scanner
-
-- Name: `sonar-scanner`
-- Install automatically: enabled
-- Source: `Install from Maven Central`
-- Version: `SonarQube Scanner 5.0.1.3006`
-
-### Maven
-
-- Name: `maven3`
-- Install automatically: enabled
-- Source: `Install from Apache`
-- Version: `3.9.7`
-
-## SonarQube Token and Credentials
-
-Generate a token in SonarQube:
-
-`Administration` -> `Security` -> `Users` -> `Tokens`
-
-Create a token, copy it, and store it in Jenkins:
-
-`Manage Jenkins` -> `Credentials` -> `global` -> `Add Credentials`
-
-Use:
-
-- Kind: `Secret text`
-- Scope: `Global`
-- Secret: `<your-sonarqube-token>`
-- ID: `sonar-token`
-- Description: `sonar-token`
-
-If you plan to push images later, also add Docker Hub credentials:
-
-- Kind: `Username with password`
-- ID: `dockerhub-credentials`
-
-## SonarQube Server Configuration in Jenkins
-
-Go to:
-
-`Manage Jenkins` -> `System`
-
-Under `SonarQube servers`, add:
-
-- Name: `sonar-server`
-- Server URL: `http://<public-ip>:9000`
-- Server authentication token: `sonar-token`
-
-## Jenkins Job Setup for SonarQube Analysis
-
-This project can be used in Jenkins as a pipeline job for automated analysis.
-
-### Create the job
-
-- Create a new Pipeline job
-- Point it to this repository
-- Select the branch you want to build
-
-The repository already contains a Linux-friendly [`Jenkinsfile`](Jenkinsfile) for Ubuntu/Jenkins agents.
-
-### Pipeline stages included
-
-The pipeline performs:
-
-1. Source checkout
-2. Maven compile
-3. Unit test execution
-4. Maven verify and package lifecycle
-5. SonarQube analysis
-
-## Required Project Changes Included
-
-This repository was updated to match your Ubuntu + Jenkins + SonarQube setup:
-
-- [`Jenkinsfile`](Jenkinsfile) now uses Linux `sh` commands instead of Windows `bat`
-- [`pom.xml`](pom.xml) now includes Sonar properties
-- [`pom.xml`](pom.xml) now includes JaCoCo reporting support for better analysis coverage
-
-## Run the Application Locally
-
-## SonarQube Code Analysis and Issue Resolution
-
-After integrating SonarQube with Jenkins, automated code quality analysis was executed as part of the CI pipeline.
-
-During the first scan, SonarQube reported a maintainability issue related to an empty test method (`contextLoads`) in the Spring Boot test class.
-
-The issue appeared under rule:
-
-`java:S1186 – Methods should not be empty`
-
-### Issue Detected
-
-SonarQube flagged the test method because it had an empty body.
-
-![SonarQube Issue](images/sonarqube-issue.png)
-
-### Resolution
-
-The issue was resolved by documenting the purpose of the test method.  
-The method verifies that the Spring Boot application context loads successfully.
-
-Updated test method:
-
-``
-@Test
-void contextLoads() {
-    // Verify that the Spring Boot application context loads successfully
-} ``
-
-## API Endpoints
-
-- `GET /` - employee portal dashboard
-- `GET /api/message` - welcome message
-- `GET /api/pipeline` - project and pipeline summary
-- `GET /actuator/health` - application health
-
-## Interview Value
-
-This project is useful for explaining:
-
-- Jenkins installation on Ubuntu
-- SonarQube setup with Docker
-- plugin and tool configuration in Jenkins
-- pipeline-based Maven build flow
-- automated code quality analysis for a Java application
-
-## Note
-
-Do not commit real secrets or SonarQube tokens to the repository. Keep tokens and passwords in Jenkins credentials instead of hardcoding them into code or pipeline files.
